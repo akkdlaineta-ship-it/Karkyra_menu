@@ -1,0 +1,236 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Меню Каркыра</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&family=PT+Sans:wght@400;700&display=swap">
+<style>
+/* Layout: шапка с названием, липкая панель (поиск + разделы), затем разделы меню списком с точечными выносками до цены. */
+:root {
+  --bg: #f6f4f1;
+  --surface: #ffffff;
+  --ink: #261e18;
+  --muted: #7a6c60;
+  --line: #ddd4ca;
+  --accent: #8a5a2b;
+  --accent-ink: #ffffff;
+  --accent-soft: #efe5d9;
+  --font-display: "Philosopher", Georgia, "Times New Roman", serif;
+  --font-body: "PT Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #19140f; --surface: #231c16; --ink: #efe6dc; --muted: #a8998b;
+    --line: #3a3027; --accent: #d9a56b; --accent-ink: #1b130b; --accent-soft: #30261c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #19140f; --surface: #231c16; --ink: #efe6dc; --muted: #a8998b;
+  --line: #3a3027; --accent: #d9a56b; --accent-ink: #1b130b; --accent-soft: #30261c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.45;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.wrap {
+  max-width: 760px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+header { padding-block: 32px 20px; }
+.kicker { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.4rem, 9vw, 3.6rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+.tag { margin: 10px 0 0; color: var(--muted); font-size: 15px; }
+.meta { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 700; }
+
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  padding-block: 10px 0;
+}
+.search {
+  width: 100%; font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+}
+.search::placeholder { color: var(--muted); }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; font: inherit; font-size: 14px; color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap;
+}
+.chip[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+section { padding-block: 28px 4px; scroll-margin-top: 130px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; margin: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+h2 small { font-family: var(--font-body); font-weight: 400; font-size: 13px; color: var(--muted); letter-spacing: .04em; }
+ul { list-style: none; margin: 12px 0 0; padding: 0; }
+li { padding-block: 7px; }
+.row { display: flex; align-items: baseline; gap: 8px; }
+.name { min-width: 0; }
+.dots { flex: 1 1 16px; min-width: 16px; border-bottom: 2px dotted var(--line); transform: translateY(-4px); }
+.price { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+.price i { font-style: normal; font-weight: 400; color: var(--muted); font-size: .85em; }
+.note { margin: 2px 0 0; font-size: 14px; color: var(--muted); max-width: 52ch; }
+.combo { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+.combo .name { font-weight: 700; }
+.combo .price { color: var(--accent); }
+.empty { padding: 40px 0; text-align: center; color: var(--muted); }
+footer { padding-block: 36px 40px; margin-top: 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { margin: 0 0 4px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">Семейное кафе · Уют · Тепло · Вкус</p>
+    <h1>Каркыра</h1>
+    <p class="tag">Меню кафе. Цены указаны в сомах.</p>
+    <div class="meta">
+      <span><b>Адрес:</b> Ак-Ордо, Эркин-Тоо 5, 2</span>
+      <span><b>Instagram:</b> @karkyra_kafe_n1</span>
+    </div>
+  </header>
+</div>
+
+<div class="bar">
+  <div class="wrap">
+    <input id="q" class="search" type="search" placeholder="Найти блюдо, например плов" autocomplete="off" aria-label="Поиск по меню">
+    <nav id="chips" class="chips" aria-label="Разделы меню"></nav>
+  </div>
+</div>
+
+<main class="wrap" id="menu"></main>
+
+<footer class="wrap">
+  <p>Кафе «Каркыра», Ак-Ордо, Эркин-Тоо 5, 2</p>
+  <p>Цены в сомах. Меню может меняться.</p>
+</footer>
+
+<script>
+var MENU = [
+  { id: "zavtraki", t: "Завтраки", items: [
+    ["Рисовая каша", "170"], ["Блинчики со сгущенкой, 3 шт", "150"], ["Омлет с сосиской", "170"],
+    ["Яичница", "140"], ["Сосиски", "140"] ] },
+  { id: "pervye", t: "Первые блюда", items: [
+    ["Шорпо из баранины", "380"], ["Шорпо из говядины", "350"], ["Шорпо по-казахски", "350"],
+    ["Шорпо из перепёлок", "500"], ["Чучвара", "290"], ["Пельмени", "290"], ["Мастава", "290"],
+    ["Рамен", "300"], ["Том Ям", "650"], ["Борщ", "300"], ["Мампар", "300"], ["Харчо грузинский", "300"] ] },
+  { id: "vtorye", t: "Вторые блюда", items: [
+    ["Бешбармак с чучуком", "400"], ["Плов классический", "350"], ["Плов ташкентский", "400"],
+    ["Манты, 5 шт", "350"], ["Жидкий лагман", "400"], ["Босо лагман", "450"], ["Гуру лагман", "480"],
+    ["Куурдак из печени", "300"], ["Куурдак из говядины", "650"], ["Куурдак из баранины", "720"],
+    ["Острое мясо с гарниром", "700"], ["Бифстроган с пюре", "480"], ["Ассорти со сложным гарниром", "350"],
+    ["Гүлчатай", "400"], ["Котлеты с гарниром", "320"], ["Куриный удон с соусом терияки", "340"] ] },
+  { id: "shashlyki", t: "Шашлыки", items: [
+    ["Шашлык из баранины", "450"], ["Шашлык из говядины", "420"], ["Шашлык из курицы", "380"],
+    ["Шашлык из печени", "300"], ["Кавказский (из куриных бёдер)", "300"], ["Наполеон", "390"],
+    ["Нежный", "500"], ["Люля-кебаб из баранины", "350"], ["Люля-кебаб из говядины", "320"],
+    ["Овощи на гриле", "300"], ["Рулет кебаб", "380"], ["Мясное ассорти", "2500"] ] },
+  { id: "salaty", t: "Салаты", items: [
+    ["Цезарь", "400"], ["Цезарь с креветками", "650"], ["Свежий салат", "300"], ["Греческий", "380"],
+    ["Китайский острый", "430"], ["Салат с тунцом", "450"], ["Шакарап", "250"], ["Фунчеза", "250"],
+    ["Оливье (на заказ)", "320"], ["Винегрет (на заказ)", "300"] ] },
+  { id: "garniry", t: "Гарниры", items: [
+    ["Гречка", "130"], ["Макароны", "130"], ["Пюре", "130"], ["Рис", "130"] ] },
+  { id: "vypechki", t: "Выпечка", items: [
+    ["Самсы с курицей", "100"], ["Аладский самсы", "130"], ["Лепёшка", "20 / 40", "0,5 / 1 шт"],
+    ["Медовик, 1 шт", "110"], ["Сметаник, 1 шт", "110"], ["Боорсок, 1 кг", "250"], ["Боорсок, 150 г", "120"] ] },
+  { id: "pizza", t: "Пицца", sub: "30 см / 40 см", items: [
+    ["Четыре сыра", "450 / 550"], ["Маргарита", "450 / 550"], ["Пепперони", "450 / 550"],
+    ["Гасконская", "500 / 600"], ["Куриная", "450 / 550"], ["Мексика", "500 / 600"],
+    ["Цезарь", "500 / 600"], ["Цезарь закрытый", "650 / 720"] ] },
+  { id: "pasta", t: "Паста", items: [ ["Паста Альфредо", "380"], ["Паста с сёмгой", "380"] ] },
+  { id: "rolly", t: "Роллы", items: [
+    ["Жареный ролл с угрём", "360"], ["Жареный ролл с крабом", "360"], ["Запечённый ролл с сёмгой", "380"],
+    ["Запечённый ролл с крабом", "380"], ["Калифорния", "320"], ["Филадельфия", "380"],
+    ["Цезарь ролл", "310"], ["Канада", "380"], ["Ролл с тунцом", "340"], ["Сяки ролл", "230"],
+    ["Авокадо ролл", "230"], ["Каппа ролл", "230"], ["Овощной ролл", "280"] ] },
+  { id: "sety", t: "Сеты и комбо", combo: true, items: [
+    ["Сет № 1", "1740", "Тёплые роллы, 60 шт"],
+    ["Сет № 2, акционное комбо", "1450", "2 жареных ролла, 2 запечённых ролла и 6 холодных роллов"],
+    ["Комбо № 1", "900", "Крылышки 20 шт, 2 соуса, фри, компот 1 л"],
+    ["Комбо № 2", "900", "Крылышки 12 шт, 2 соуса, фри, наггетсы 8 шт, компот 1 л"],
+    ["Комбо № 3", "1300", "Крылышки 26 шт, 3 соуса, фри, наггетсы 6 шт, компот 1 л"],
+    ["Комбо № 4", "2000", "Маргарита 30 см, Пепперони 30 см, роллы 60 шт, кола 1 л"] ] },
+  { id: "zakaz", t: "Блюда на заказ", items: [
+    ["Плов ташкентский, 1 кг", "2600"], ["Плов чайханский с бараниной, 1 кг", "3000"], ["Баранья голова", "1600"] ] },
+  { id: "holod", t: "Холодные напитки", items: [
+    ["Кола, 1 л", "120"], ["Пепси, 1 л", "120"], ["Фанта, 1 л", "120"], ["Пиала, 1 л", "120"],
+    ["Натуральный сок, 1 л", "140"], ["Легенда, 1 л", "60"], ["Компот, 1 л", "100"],
+    ["Морс облепиховый", "140"], ["Компот, стакан", "30"], ["Домашний айран", "30"] ] },
+  { id: "goryach", t: "Горячие напитки", items: [
+    ["Американо", "130 / 160", "0,2 л / 0,3 л"], ["Капучино", "160 / 180", "0,2 л / 0,3 л"],
+    ["Латте, 0,3 л", "180"], ["Травяной чай", "200"],
+    ["Чёрный чай", "30 / 70", "кружка / чайник"], ["Зелёный чай", "30 / 70", "кружка / чайник"],
+    ["Чай с молоком", "50 / 120", "кружка / чайник"] ] },
+  { id: "dop", t: "Дополнительно", items: [ ["Лимон, кусочек", "20"], ["Мёд, 30 г", "50"] ] }
+];
+
+var menuEl = document.getElementById("menu");
+var chipsEl = document.getElementById("chips");
+var qEl = document.getElementById("q");
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+function itemHTML(it, combo) {
+  var note = it[2] ? '<p class="note">' + esc(it[2]) + "</p>" : "";
+  var cls = combo ? ' class="combo"' : "";
+  return "<li" + cls + '><div class="row"><span class="name">' + esc(it[0]) + '</span><span class="dots"></span><span class="price">' + esc(it[1]) + " <i>с</i></span></div>" + note + "</li>";
+}
+
+function render(filter) {
+  var f = (filter || "").trim().toLowerCase();
+  var html = "", chips = "", shown = 0;
+  MENU.forEach(function (cat) {
+    var items = cat.items.filter(function (it) {
+      return !f || (it[0] + " " + (it[2] || "") + " " + cat.t).toLowerCase().indexOf(f) !== -1;
+    });
+    if (!items.length) return;
+    shown++;
+    chips += '<button class="chip" type="button" data-id="' + cat.id + '">' + esc(cat.t) + "</button>";
+    html += '<section id="s-' + cat.id + '" data-id="' + cat.id + '"><h2>' + esc(cat.t) +
+      (cat.sub ? "<small>" + esc(cat.sub) + "</small>" : "") + "</h2><ul>" +
+      items.map(function (it) { return itemHTML(it, cat.combo); }).join("") + "</ul></section>";
+  });
+  menuEl.innerHTML = shown ? html : '<p class="empty">Ничего не найдено. Попробуйте другое слово.</p>';
+  chipsEl.innerHTML = chips;
+  spy();
+}
+
+function spy() {
+  var secs = menuEl.querySelectorAll("section");
+  var current = null;
+  secs.forEach(function (s) { if (s.getBoundingClientRect().top <= 150) current = s.dataset.id; });
+  if (!current && secs.length) current = secs[0].dataset.id;
+  chipsEl.querySelectorAll(".chip").forEach(function (c) {
+    var on = c.dataset.id === current;
+    c.setAttribute("aria-current", on ? "true" : "false");
+    if (on && c.dataset.shown !== "1") { c.dataset.shown = "1"; }
+  });
+  var act = chipsEl.querySelector('[aria-current="true"]');
+  if (act && spy.last !== current) {
+    spy.last = current;
+    var box = chipsEl.getBoundingClientRect(), r = act.getBoundingClientRect();
+    if (r.left < box.left || r.right > box.right) chipsEl.scrollTo({ left: chipsEl.scrollLeft + r.left - box.left - 16, behavior: "smooth" });
+  }
+}
+
+chipsEl.addEventListener("click", function (e) {
+  var b = e.target.closest(".chip");
+  if (!b) return;
+  var s = document.getElementById("s-" + b.dataset.id);
+  if (s) s.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+qEl.addEventListener("input", function () { render(qEl.value); });
+window.addEventListener("scroll", spy, { passive: true });
+render("");
+</script>
+
+</body></html>
